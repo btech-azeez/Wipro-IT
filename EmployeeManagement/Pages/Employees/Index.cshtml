@@ -1,0 +1,268 @@
+@page
+@model EmployeeManagement.Pages.Employees.IndexModel
+@using EmployeeManagement.Models
+@{
+    ViewData["Title"] = "Employees";
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+    var canAdd     = role is "CEO" or "HR" or "Manager";
+    var canEdit    = role is "CEO" or "HR" or "Manager";
+    var canDelete  = role is "CEO" or "HR";
+    var canSeeAll  = role is "CEO" or "HR";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-people-fill me-2 text-primary"></i>
+            @(role == "Manager" ? "My Team" : "All Employees")
+        </h1>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-page="/Index" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active">Employees</li>
+        </ol></nav>
+    </div>
+    @if (canAdd)
+    {
+        <a asp-page="/Employees/Create" class="btn btn-wipro">
+            <i class="bi bi-person-plus me-2"></i>Add Employee
+        </a>
+    }
+</div>
+
+<!-- Search & Filter bar -->
+<div class="wipro-card mb-4">
+    <div class="card-body py-3">
+        <form method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Search</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="SearchTerm" value="@Model.SearchTerm" class="form-control"
+                               placeholder="Name, email, Wipro ID…" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <select name="Department" class="form-select">
+                        <option value="">All Departments</option>
+                        @foreach (var d in Model.Departments)
+                        {
+                            <option value="@d" selected="@(Model.Department == d)">@d</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Role</label>
+                    <select name="RoleFilter" class="form-select">
+                        <option value="">All Roles</option>
+                        @foreach (var r in WiproRoles.All)
+                        {
+                            <option value="@r" selected="@(Model.RoleFilter == r)">@r</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-wipro flex-grow-1">
+                        <i class="bi bi-funnel me-1"></i>Filter
+                    </button>
+                    <a asp-page="/Employees/Index" class="btn btn-wipro-outline">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results summary -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="text-muted" style="font-size:0.85rem;">
+        Showing <strong>@Model.Employees.Count</strong> of <strong>@Model.TotalCount</strong> employees
+        @if (!string.IsNullOrEmpty(Model.SearchTerm)) { <span> for "<em>@Model.SearchTerm</em>"</span> }
+    </span>
+    <div class="d-flex gap-2">
+        <span class="badge" style="background:#f7f9ff;color:#4B4BF7;border:1px solid #e8ecf4;font-size:0.8rem;padding:6px 10px;">
+            Page @Model.CurrentPage / @Model.TotalPages
+        </span>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="wipro-card">
+    <div class="table-responsive">
+        <table class="wipro-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Employee</th>
+                    <th>Wipro ID</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Location</th>
+                    <th>Joined</th>
+                    @if (canSeeAll)
+                    {
+                        <th>CTC (₹)</th>
+                    }
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Employees.Any())
+                {
+                    <tr>
+                        <td colspan="10" class="text-center py-5 text-muted">
+                            <i class="bi bi-people" style="font-size:3rem;opacity:0.3;display:block;margin-bottom:0.5rem;"></i>
+                            No employees found.
+                        </td>
+                    </tr>
+                }
+                @foreach (var emp in Model.Employees)
+                {
+                    var colors = new Dictionary<string,string>
+                    {
+                        ["CEO"]="linear-gradient(135deg,#f7b731,#f39c12)",
+                        ["HR"]="linear-gradient(135deg,#e94560,#c0392b)",
+                        ["Manager"]="linear-gradient(135deg,#4B4BF7,#6C3FC8)",
+                        ["Employee"]="linear-gradient(135deg,#20bf6b,#0a3d62)"
+                    };
+                    var avBg = colors.ContainsKey(emp.Role) ? colors[emp.Role] : "linear-gradient(#ccc,#aaa)";
+                    var ini  = emp.FirstName.Length > 0 ? emp.FirstName[0].ToString() : "?";
+                    ini += emp.LastName.Length > 0 ? emp.LastName[0].ToString() : "";
+
+                    <tr>
+                        <td class="text-muted" style="font-size:0.8rem;">@emp.EmployeeId</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="emp-avatar" style="background:@avBg;color:white;">@ini</div>
+                                <div>
+                                    <div style="font-weight:600;font-size:0.875rem;">@emp.FirstName @emp.LastName</div>
+                                    <div style="font-size:0.75rem;color:#94a3b8;">@emp.Email</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><code style="font-size:0.78rem;background:#f7f9ff;padding:2px 6px;border-radius:4px;">@emp.WiproEmployeeId</code></td>
+                        <td style="font-size:0.85rem;">@emp.Department</td>
+                        <td>
+                            <span class="role-badge role-@emp.Role">@emp.Role</span>
+                        </td>
+                        <td style="font-size:0.85rem;">
+                            @if (!string.IsNullOrEmpty(emp.WorkLocation))
+                            {
+                                <i class="bi bi-geo-alt me-1 text-muted"></i>@emp.WorkLocation
+                            }
+                        </td>
+                        <td style="font-size:0.82rem;color:#64748b;">@emp.DateOfJoining.ToString("dd MMM yyyy")</td>
+                        @if (canSeeAll)
+                        {
+                            <td style="font-weight:600;font-size:0.85rem;">
+                                ₹@String.Format("{0:N0}", emp.Salary)
+                            </td>
+                        }
+                        <td>
+                            <span class="badge @(emp.IsActive ? "status-active" : "status-inactive")" style="font-size:0.72rem;padding:4px 8px;border-radius:6px;">
+                                @(emp.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a asp-page="/Employees/Details" asp-route-id="@emp.EmployeeId"
+                                   class="btn btn-sm btn-outline-secondary" style="border-radius:6px;" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                @if (canEdit)
+                                {
+                                    <a asp-page="/Employees/Edit" asp-route-id="@emp.EmployeeId"
+                                       class="btn btn-sm btn-outline-primary" style="border-radius:6px;" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                }
+                                @if (canDelete)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-danger" style="border-radius:6px;"
+                                            onclick="confirmDelete(@emp.EmployeeId, '@emp.FirstName @emp.LastName')" title="Delete">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            @if (Model.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-page="/Employees/Index"
+                       asp-route-page="@(Model.CurrentPage-1)"
+                       asp-route-SearchTerm="@Model.SearchTerm"
+                       asp-route-Department="@Model.Department">‹ Prev</a>
+                </li>
+            }
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-page="/Employees/Index"
+                       asp-route-page="@i"
+                       asp-route-SearchTerm="@Model.SearchTerm"
+                       asp-route-Department="@Model.Department">@i</a>
+                </li>
+            }
+            @if (Model.CurrentPage < Model.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-page="/Employees/Index"
+                       asp-route-page="@(Model.CurrentPage+1)"
+                       asp-route-SearchTerm="@Model.SearchTerm"
+                       asp-route-Department="@Model.Department">Next ›</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px;border:none;">
+            <div class="modal-header border-0 pb-0">
+                <div class="modal-title" style="font-weight:700;color:#e94560;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove <strong id="deleteEmpName"></strong> from the system?</p>
+                <p class="text-muted small mb-0">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" asp-page-handler="Delete" id="deleteForm">
+                    <input type="hidden" name="id" id="deleteEmpId" />
+                    <button type="submit" class="btn btn-danger" style="border-radius:8px;">
+                        <i class="bi bi-trash3 me-1"></i>Yes, Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function confirmDelete(id, name) {
+        document.getElementById('deleteEmpId').value = id;
+        document.getElementById('deleteEmpName').textContent = name;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+</script>
+}

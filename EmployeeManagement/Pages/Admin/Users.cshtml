@@ -1,0 +1,70 @@
+@page
+@model EmployeeManagement.Pages.Admin.UsersModel
+@{
+    ViewData["Title"] = "User Accounts";
+    var currentUserId = int.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var userId) ? userId : 0;
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-shield-lock-fill me-2 text-primary"></i>User Accounts</h1>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-page="/Index" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active">User Accounts</li>
+        </ol></nav>
+    </div>
+    <a asp-page="/Account/Register" class="btn btn-wipro"><i class="bi bi-person-plus me-2"></i>Create Account</a>
+</div>
+
+<div class="wipro-card mb-4">
+    <div class="card-body py-3">
+        <form method="get" class="d-flex gap-2">
+            <label class="visually-hidden" for="userSearch">Search accounts</label>
+            <input id="userSearch" name="Search" value="@Model.Search" class="form-control" placeholder="Search name, email, or role" />
+            <button type="submit" class="btn btn-wipro"><i class="bi bi-search me-1"></i>Search</button>
+            <a asp-page="/Admin/Users" class="btn btn-wipro-outline" title="Clear search"><i class="bi bi-x-lg"></i></a>
+        </form>
+    </div>
+</div>
+
+<div class="wipro-card">
+    <div class="table-responsive">
+        <table class="wipro-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last sign in</th><th>Actions</th></tr></thead>
+            <tbody>
+                @if (Model.Users.Count == 0)
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-5">No accounts found.</td></tr>
+                }
+                @foreach (var account in Model.Users)
+                {
+                    <tr>
+                        <td class="fw-semibold">@account.FullName</td>
+                        <td>@account.Email</td>
+                        <td><span class="role-badge role-@account.Role">@account.Role</span></td>
+                        <td><span class="badge @(account.IsActive ? "status-active" : "status-inactive")">@(account.IsActive ? "Active" : "Inactive")</span></td>
+                        <td>@(account.LastLoginAt?.ToLocalTime().ToString("dd MMM yyyy, h:mm tt") ?? "Never")</td>
+                        <td>
+                            @if (account.UserId == currentUserId)
+                            {
+                                <span class="text-muted small">Your account</span>
+                            }
+                            else
+                            {
+                                <div class="d-flex gap-2">
+                                    <form method="post" asp-page-handler="Toggle" asp-route-id="@account.UserId" asp-route-search="@Model.Search">
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit">@(account.IsActive ? "Deactivate" : "Activate")</button>
+                                    </form>
+                                    <form method="post" asp-page-handler="Delete" asp-route-id="@account.UserId" asp-route-search="@Model.Search"
+                                          onsubmit="return confirm('Delete this account permanently?');">
+                                        <button class="btn btn-sm btn-outline-danger" type="submit" aria-label="Delete account for @account.FullName"><i class="bi bi-trash3"></i></button>
+                                    </form>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

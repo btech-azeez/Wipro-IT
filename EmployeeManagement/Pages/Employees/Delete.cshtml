@@ -1,0 +1,47 @@
+@page "{id:int}"
+@model EmployeeManagement.Pages.Employees.DeleteModel
+@{
+    ViewData["Title"] = "Delete Employee";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Confirmation</h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="lead">Are you sure you want to permanently delete this employee record?</p>
+
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle me-1"></i>
+                    This action cannot be undone. All information associated with this employee will be removed from the database.
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Employee Name</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.Employee.FirstName @Model.Employee.LastName</dd>
+
+                    <dt class="col-sm-4 text-muted">Email</dt>
+                    <dd class="col-sm-8">@Model.Employee.Email</dd>
+
+                    <dt class="col-sm-4 text-muted">Department</dt>
+                    <dd class="col-sm-8">@Model.Employee.Department</dd>
+
+                    <dt class="col-sm-4 text-muted">Designation</dt>
+                    <dd class="col-sm-8">@Model.Employee.Designation</dd>
+                </dl>
+
+                <form method="post" class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                    <input type="hidden" asp-for="Employee.EmployeeId" />
+                    <a asp-page="./Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Delete Employee
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

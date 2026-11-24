@@ -1,0 +1,22 @@
+@page
+@model EmployeeManagement.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "Logging Out";
+}
+
+<div class="row justify-content-center align-items-center py-5">
+    <div class="col-12 col-md-6 col-lg-4 text-center">
+        <div class="card border-0 shadow-sm rounded-4 p-5">
+            <div class="spinner-border text-teal mb-4 mx-auto" role="status" style="width: 3rem; height: 3rem; color: #0d9488;">
+                <span class="visually-hidden">Logging out...</span>
+            </div>
+            <h5 class="fw-bold mb-2">Signing Out</h5>
+            <p class="text-muted small mb-4">Please wait while your session is securely terminated...</p>
+            <div>
+                <a asp-page="/Account/Login" class="btn btn-sm btn-outline-secondary">
+                    Click here if not redirected
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

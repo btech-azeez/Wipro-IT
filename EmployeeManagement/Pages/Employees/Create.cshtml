@@ -1,0 +1,185 @@
+@page
+@model EmployeeManagement.Pages.Employees.CreateModel
+@using EmployeeManagement.Models
+@{
+    ViewData["Title"] = "Add Employee";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-person-plus-fill me-2 text-primary"></i>Add New Employee</h1>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-page="/Index" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-page="/Employees/Index" class="text-decoration-none">Employees</a></li>
+            <li class="breadcrumb-item active">Add</li>
+        </ol></nav>
+    </div>
+</div>
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="alert alert-danger d-flex align-items-center gap-2 mb-4" style="border-radius:10px;">
+        <i class="bi bi-exclamation-triangle-fill"></i>@Model.ErrorMessage
+    </div>
+}
+
+<form method="post">
+    <div class="row g-4">
+
+        <!-- Personal Info -->
+        <div class="col-lg-8">
+            <div class="wipro-card mb-4">
+                <div class="card-body">
+                    <h5 style="font-weight:700;border-bottom:1px solid #f1f5f9;padding-bottom:0.75rem;margin-bottom:1.25rem;">
+                        <i class="bi bi-person-fill me-2 text-primary"></i>Personal Information
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="Employee.WiproEmployeeId" class="form-label"></label>
+                            <input asp-for="Employee.WiproEmployeeId" class="form-control" placeholder="WIP-ENG-005" />
+                            <span asp-validation-for="Employee.WiproEmployeeId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Employee.FirstName" class="form-label"></label>
+                            <input asp-for="Employee.FirstName" class="form-control" />
+                            <span asp-validation-for="Employee.FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Employee.LastName" class="form-label"></label>
+                            <input asp-for="Employee.LastName" class="form-control" />
+                            <span asp-validation-for="Employee.LastName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Employee.Email" class="form-label"></label>
+                            <input asp-for="Employee.Email" class="form-control" placeholder="name@wipro.com" />
+                            <span asp-validation-for="Employee.Email" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Employee.PhoneNumber" class="form-label"></label>
+                            <input asp-for="Employee.PhoneNumber" class="form-control" placeholder="+91-98XXXXXXXX" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Employee.Gender" class="form-label"></label>
+                            <select asp-for="Employee.Gender" class="form-select">
+                                <option value="">Select…</option>
+                                <option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Employee.DateOfBirth" class="form-label"></label>
+                            <input asp-for="Employee.DateOfBirth" type="date" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Employee.BloodGroup" class="form-label"></label>
+                            <select asp-for="Employee.BloodGroup" class="form-select">
+                                <option value="">Select…</option>
+                                @foreach(var bg in new[]{"A+","A-","B+","B-","O+","O-","AB+","AB-"})
+                                { <option>@bg</option> }
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Employee.Address" class="form-label"></label>
+                            <textarea asp-for="Employee.Address" class="form-control" rows="2" placeholder="Residential address"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employment Details -->
+            <div class="wipro-card">
+                <div class="card-body">
+                    <h5 style="font-weight:700;border-bottom:1px solid #f1f5f9;padding-bottom:0.75rem;margin-bottom:1.25rem;">
+                        <i class="bi bi-briefcase-fill me-2 text-primary"></i>Employment Details
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Employee.Department" class="form-label"></label>
+                            <select asp-for="Employee.Department" class="form-select">
+                                <option value="">Select Department</option>
+                                @foreach (var d in new[]{"Engineering","Human Resources","Sales","Finance","Marketing","Operations","Executive","Legal","IT Infrastructure","Quality Assurance"})
+                                { <option>@d</option> }
+                            </select>
+                            <span asp-validation-for="Employee.Department" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Employee.Designation" class="form-label"></label>
+                            <input asp-for="Employee.Designation" class="form-control" placeholder="e.g. Senior Software Engineer" />
+                            <span asp-validation-for="Employee.Designation" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Employee.Role" class="form-label"></label>
+                            <select asp-for="Employee.Role" class="form-select">
+                                @foreach (var r in WiproRoles.All)
+                                { <option value="@r">@r</option> }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Employee.WorkLocation" class="form-label"></label>
+                            <select asp-for="Employee.WorkLocation" class="form-select">
+                                <option value="">Select…</option>
+                                @foreach (var l in new[]{"Bangalore","Hyderabad","Pune","Chennai","Mumbai","Kolkata","Delhi NCR","Remote"})
+                                { <option>@l</option> }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Employee.DateOfJoining" class="form-label"></label>
+                            <input asp-for="Employee.DateOfJoining" type="date" class="form-control" />
+                            <span asp-validation-for="Employee.DateOfJoining" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Employee.ReportingManagerId" class="form-label"></label>
+                            <input asp-for="Employee.ReportingManagerId" class="form-control" placeholder="e.g. WIP-ENG-001" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Employee.Salary" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">₹</span>
+                                <input asp-for="Employee.Salary" type="number" class="form-control" placeholder="1200000" />
+                            </div>
+                            <span asp-validation-for="Employee.Salary" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input asp-for="Employee.IsActive" class="form-check-input" type="checkbox" role="switch" id="isActive" />
+                                <label class="form-check-label" for="isActive">Active Employee</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side card -->
+        <div class="col-lg-4">
+            <div class="wipro-card mb-4" style="position:sticky;top:calc(var(--topbar-h) + 1rem);">
+                <div class="card-body text-center">
+                    <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#4B4BF7,#6C3FC8);display:inline-flex;align-items:center;justify-content:center;font-size:2rem;color:white;margin-bottom:1rem;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <h6 style="font-weight:700;">New Employee</h6>
+                    <p class="text-muted small">Fill all required fields and click Save to create the employee record.</p>
+                    <hr />
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-wipro">
+                            <i class="bi bi-check-lg me-2"></i>Save Employee
+                        </button>
+                        <a asp-page="/Employees/Index" class="btn btn-wipro-outline">
+                            <i class="bi bi-x-lg me-2"></i>Cancel
+                        </a>
+                    </div>
+
+                    <div class="mt-4 text-start">
+                        <div class="sidebar-section-title">Role Permissions</div>
+                        @foreach (var r in new[]{("CEO","Crown — Full Access","f7b731"),("HR","People — HR Access","e94560"),("Manager","Briefcase — Team Access","4B4BF7"),("Employee","Person — Self Only","20bf6b")})
+                        {
+                            <div class="d-flex align-items-center gap-2 mb-2" style="font-size:0.8rem;">
+                                <span class="role-badge role-@r.Item1">@r.Item1</span>
+                                <span class="text-muted">@r.Item2</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

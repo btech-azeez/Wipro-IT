@@ -1,0 +1,13 @@
+.vs/
+**/bin/
+**/obj/
+artifacts/
+.env
+.env.*
+**/appsettings.Local.json
+**/appsettings.Development.json
+**/secrets*.json
+*.user
+*.suo
+*.mdf
+*.ldf

@@ -1,0 +1,23 @@
+@page
+@model EmployeeManagement.Pages.ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="card shadow-sm border-danger my-5">
+    <div class="card-header bg-danger text-white">
+        <h3 class="mb-0"><i class="bi bi-exclamation-octagon-fill me-2"></i>An error occurred</h3>
+    </div>
+    <div class="card-body">
+        <p class="lead">An error occurred while processing your request.</p>
+        @if (Model.ShowRequestId)
+        {
+            <p>
+                <strong>Request ID:</strong> <code>@Model.RequestId</code>
+            </p>
+        }
+        <a asp-page="/Index" class="btn btn-outline-primary mt-2">
+            <i class="bi bi-arrow-left me-1"></i>Back to Home
+        </a>
+    </div>
+</div>
